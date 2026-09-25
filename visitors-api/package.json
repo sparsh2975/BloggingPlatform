@@ -1,0 +1,14 @@
+{
+  "name": "visitors-api",
+  "version": "1.0.0",
+  "description": "In-memory visitor management REST API built with Express.js",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start:modular": "node src/server.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
