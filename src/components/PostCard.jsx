@@ -61,7 +61,7 @@ export function PostCard({ post, onClick, index = 0 }) {
           color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '1.5rem', flex: 1,
           display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden'
         }}>
-          {post.subtitle || post.content.replace(/[#*`>\[\]_~]/g, '').substring(0, 120) + '…'}
+          {post.subtitle || post.content.replace(/[#*`>\]_~]/g, '').substring(0, 120) + '…'}
         </p>
 
         <div style={{

@@ -48,16 +48,6 @@ function getInitials(name) {
     .toUpperCase();
 }
 
-// ─── Update Visitor Count ──────────────────────
-async function updateCount() {
-  try {
-    const res  = await fetch(`${API}/visitors/count`);
-    const data = await res.json();
-    countEl.textContent = data.count;
-  } catch {
-    countEl.textContent = '?';
-  }
-}
 
 // ─── Render Visitor Cards ──────────────────────
 function renderVisitors(visitors) {

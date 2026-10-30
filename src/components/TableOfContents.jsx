@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 
 export function TableOfContents({ markdown }) {
-  const [headings, setHeadings] = useState([]);
-
-  useEffect(() => {
+  const headings = useMemo(() => {
     const headingRegex = /^##\s+(.+)$/gm;
     const matches = [];
     let match;
@@ -13,7 +11,7 @@ export function TableOfContents({ markdown }) {
         text: match[1]
       });
     }
-    setHeadings(matches);
+    return matches;
   }, [markdown]);
 
   if (headings.length === 0) return null;

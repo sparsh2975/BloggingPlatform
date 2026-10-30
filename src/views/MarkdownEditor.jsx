@@ -6,15 +6,33 @@ import { EditorToolbar } from '../components/EditorToolbar';
 
 const DRAFT_KEY = 'inkwell_draft';
 
+function getEditorDraft(initialPost) {
+  if (initialPost) return { title: initialPost.title || '', subtitle: initialPost.subtitle || '', coverImage: initialPost.coverImage || '', content: initialPost.content || '', author: initialPost.author || '', tagsInput: initialPost.tags?.join(', ') || '' };
+
+  try {
+    const saved = localStorage.getItem(DRAFT_KEY);
+    if (!saved) return {};
+    const draft = JSON.parse(saved);
+    return {
+      title: draft.title || '', subtitle: draft.subtitle || '', coverImage: draft.coverImage || '',
+      content: draft.content || '', author: draft.author || '', tagsInput: draft.tagsInput || '',
+    };
+  } catch (error) {
+    console.warn('Failed to restore the editor draft', error);
+    return {};
+  }
+}
+
 export function MarkdownEditor({ initialPost, onSave, setRoute }) {
   const isEditing = !!initialPost;
+  const [initialDraft] = useState(() => getEditorDraft(initialPost));
 
-  const [title, setTitle] = useState(initialPost?.title || '');
-  const [subtitle, setSubtitle] = useState(initialPost?.subtitle || '');
-  const [coverImage, setCoverImage] = useState(initialPost?.coverImage || '');
-  const [content, setContent] = useState(initialPost?.content || '');
-  const [author, setAuthor] = useState(initialPost?.author || '');
-  const [tagsInput, setTagsInput] = useState(initialPost?.tags?.join(', ') || '');
+  const [title, setTitle] = useState(initialDraft.title || '');
+  const [subtitle, setSubtitle] = useState(initialDraft.subtitle || '');
+  const [coverImage, setCoverImage] = useState(initialDraft.coverImage || '');
+  const [content, setContent] = useState(initialDraft.content || '');
+  const [author, setAuthor] = useState(initialDraft.author || '');
+  const [tagsInput, setTagsInput] = useState(initialDraft.tagsInput || '');
   const [viewMode, setViewMode] = useState('split');
   const [saveLabel, setSaveLabel] = useState('');
   const textareaRef = useRef(null);
@@ -35,20 +53,6 @@ export function MarkdownEditor({ initialPost, onSave, setRoute }) {
     }
   }, [title, subtitle, coverImage, content, author, tagsInput, isEditing]);
 
-  // Restore draft on mount
-  useEffect(() => {
-    if (!isEditing) {
-      const saved = localStorage.getItem(DRAFT_KEY);
-      if (saved) {
-        try {
-          const d = JSON.parse(saved);
-          setTitle(d.title || ''); setSubtitle(d.subtitle || '');
-          setCoverImage(d.coverImage || ''); setContent(d.content || '');
-          setAuthor(d.author || ''); setTagsInput(d.tagsInput || '');
-        } catch {}
-      }
-    }
-  }, []);
 
   const insertSyntax = (syntax) => {
     const el = textareaRef.current;

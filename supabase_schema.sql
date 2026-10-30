@@ -18,21 +18,43 @@ CREATE TABLE IF NOT EXISTS posts (
 -- Enable Row Level Security (required by Supabase)
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 
--- Allow public read access to published posts
+-- Allow public read access (SELECT)
+DROP POLICY IF EXISTS "Allow public read" ON posts;
 CREATE POLICY "Allow public read" ON posts
   FOR SELECT USING (true);
 
 -- Allow public insert
+DROP POLICY IF EXISTS "Allow public insert" ON posts;
 CREATE POLICY "Allow public insert" ON posts
   FOR INSERT WITH CHECK (true);
 
 -- Allow public update
+DROP POLICY IF EXISTS "Allow public update" ON posts;
 CREATE POLICY "Allow public update" ON posts
   FOR UPDATE USING (true);
 
 -- Allow public delete
+DROP POLICY IF EXISTS "Allow public delete" ON posts;
 CREATE POLICY "Allow public delete" ON posts
   FOR DELETE USING (true);
+
+-- ========================================================
+-- ENABLE REALTIME ON POSTS TABLE
+-- ========================================================
+-- Set replica identity to full so UPDATE and DELETE events include the complete row payload
+ALTER TABLE posts REPLICA IDENTITY FULL;
+
+-- Add the posts table to Supabase Realtime publication
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables 
+    WHERE pubname = 'supabase_realtime' AND tablename = 'posts'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE posts;
+  END IF;
+END $$;
+
 
 -- Seed with sample posts
 INSERT INTO posts (title, subtitle, content, cover_image, tags, author, status, likes) VALUES
